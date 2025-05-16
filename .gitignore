@@ -1,0 +1,40 @@
+# Unity specific files
+*.userprefs
+*.suo
+*.user
+*.unityproj
+*.booproj
+*.svd
+*.userprefs
+Temp/
+Library/
+Logs/
+UserSettings/
+Assets/AssetStoreTools*
+ProjectSettings/*
+*.pdb
+*.mdb
+*.userprefs
+*.suo
+*.sln
+*.csproj
+*.sdf
+*.opensdf
+*.user
+*.unityproj
+*.booproj
+*.svd
+*.unityproj.userprefs
+# Unity generated files
+*.pidb.meta
+*.pidb
+# Crashlytics generated files
+crashlytics-build.properties
+# Android generated files
+bin/
+gen/
+obj/
+# iOS generated files
+*.xcodeproj/
+# Visual Studio Code specific files
+.vscode/
