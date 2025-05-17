@@ -101,12 +101,12 @@ public class AudioManager
         }
     }
 
-    private async Task WaitForBufferAndPlay()
+    private async void WaitForBufferAndPlay()
     {
         // 等待缓冲区有至少1秒的数据
         while (playbackBuffer.Count < playSampleRate)
         {
-        //    await Awaitable.NextFrameAsync();
+            await Task.Yield();
         }
         audioSource.Play();
     }

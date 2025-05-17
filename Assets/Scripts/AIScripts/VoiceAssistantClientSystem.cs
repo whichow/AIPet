@@ -133,7 +133,7 @@ namespace Vonweller
                 wsManager.audioManager = audioManager;
                 // 等待WebSocket连接
                 await ConnectWebSocket();
-                // await Awaitable.WaitForSecondsAsync(1);
+                await Task.Delay(1000);
 
 
                 // 初始化MQTT服务
@@ -263,7 +263,7 @@ namespace Vonweller
         }
 
         //接收服务端消息
-        private void HandleMessage(string message)
+        private async void HandleMessage(string message)
         {
             if (string.IsNullOrEmpty(message))
             {
@@ -296,7 +296,7 @@ namespace Vonweller
                         Debug.LogError("session_id为空");
                         return;
                     }
-                    // StartListening().ToCoroutine();
+                    await StartListening();
                 }
                 else if (msgType == "llm")
                 {
@@ -304,6 +304,8 @@ namespace Vonweller
                     if (!string.IsNullOrEmpty(emotion))
                     {
                         var t = $"[AI emotion]:\n【{emotion}】";
+                        Debug.Log($"AI emotion: {emotion}");
+                        // TODO: 通过事件或其他方式通知UI更新
                         // var getcmaer = GameObject.Find("AI_(Clone)")?.GetComponentInChildren<Getcmaer>();
                         // if (getcmaer != null)
                         // {
@@ -322,6 +324,8 @@ namespace Vonweller
                     if (!string.IsNullOrEmpty(text))
                     {
                         var t = "[用户]:\n" + text;
+                        Debug.Log($"用户: {text}");
+                        // TODO: 通过事件或其他方式通知UI更新
                         // var getcmaer = GameObject.Find("AI_(Clone)")?.GetComponentInChildren<Getcmaer>();
                         // if (getcmaer != null)
                         // {
@@ -351,6 +355,8 @@ namespace Vonweller
                         if (!string.IsNullOrEmpty(text))
                         {
                             var t = "[AI]:\n" + text;
+                            Debug.Log($"AI: {text}");
+                            // TODO: 通过事件或其他方式通知UI更新
                             // var getcmaer = GameObject.Find("AI_(Clone)")?.GetComponentInChildren<Getcmaer>();
                             // if (getcmaer != null)
                             // {
@@ -365,7 +371,7 @@ namespace Vonweller
                         isPlaying = false;
                         lastTtsEndTime = Time.time;
                         isInCooldown = true;
-                        // DelayedStartListening().ToCoroutine();
+                        await DelayedStartListening();
                     }
                 }
                 else if (msgType == "goodbye")
@@ -416,15 +422,15 @@ namespace Vonweller
             }
         }
 
-        void Update()
+        public async Task Update()
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                // OnSpaceKeyPress().ToCoroutine();
+                await OnSpaceKeyPress();
             }
             else if (Input.GetKeyUp(KeyCode.Space))
             {
-                // OnSpaceKeyRelease().ToCoroutine();
+                await OnSpaceKeyRelease();
             }
         }
 
@@ -515,7 +521,7 @@ namespace Vonweller
                     if (!hasMicrophone)
                     {
                         Debug.Log("麦克风不存在，但继续监听服务器音频");
-                        // await Awaitable.EndOfFrameAsync();
+                        await Task.Yield();
                         continue;
                     }
 
@@ -530,7 +536,7 @@ namespace Vonweller
                             isSpeaking = false;
                             currentSilenceFrames = 0;
                         }
-                        // await Awaitable.EndOfFrameAsync();
+                        await Task.Yield();
                         continue;
                     }
                     else
@@ -638,7 +644,7 @@ namespace Vonweller
                             }
                         }
                     }
-                    // await Awaitable.EndOfFrameAsync();
+                    await Task.Yield();
                 }
             }
             catch (Exception e)
