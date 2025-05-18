@@ -7,7 +7,6 @@ public class CharacterController : MonoBehaviour
 {
     public Animator animator;
 
-    // 表情到动画状态名的映射
     private static readonly Dictionary<string, string> emotionToState = new Dictionary<string, string>
     {
         { "neutral", "default@unitychan" },
@@ -31,6 +30,31 @@ public class CharacterController : MonoBehaviour
         { "sleepy", "eye_close@unitychan" },
         { "silly", "smile2@unitychan" },
         { "confused", "conf@unitychan" }
+    };
+
+    private static readonly Dictionary<string, string> emotionToAction = new Dictionary<string, string>
+    {
+        { "neutral", "WAIT00" },
+        { "happy", "WAIT01" },
+        { "laughing", "WAIT02" },
+        { "funny", "WAIT02" },
+        { "sad", "WAIT03" },
+        { "angry", "WAIT04" },
+        { "crying", "WAIT03" },
+        { "loving", "WAIT01" },
+        { "embarrassed", "WAIT03" },
+        { "surprised", "WAIT04" },
+        { "shocked", "WAIT04" },
+        { "thinking", "WAIT00" },
+        { "winking", "WAIT01" },
+        { "cool", "WAIT00" },
+        { "relaxed", "WAIT00" },
+        { "delicious", "WAIT01" },
+        { "kissy", "WAIT01" },
+        { "confident", "WAIT00" },
+        { "sleepy", "WAIT03" },
+        { "silly", "WAIT02" },
+        { "confused", "WAIT03" }
     };
 
     private Coroutine emotionCoroutine;
@@ -63,19 +87,22 @@ public class CharacterController : MonoBehaviour
     {
         Debug.Log($"Received emotion: {emotion}");
         animator.SetLayerWeight(1, 1f);
+
         string stateName = EmotionToStateName(emotion);
+        string actionName = EmotionToActionName(emotion);
+
+        if (!string.IsNullOrEmpty(actionName))
+            animator.CrossFade(actionName, 0.1f, 0);
         if (!string.IsNullOrEmpty(stateName))
-        {
-            animator.CrossFade(stateName, 0);
-            if (emotionCoroutine != null)
-                StopCoroutine(emotionCoroutine);
-            emotionCoroutine = StartCoroutine(ResetToDefaultAfterDelay(stateName, 1.5f)); // 1.5秒后切回默认，可根据动画长度调整
-        }
+            animator.CrossFade(stateName, 0.1f, 1);
+
+        if (emotionCoroutine != null)
+            StopCoroutine(emotionCoroutine);
+        emotionCoroutine = StartCoroutine(ResetToDefaultAfterDelay(1.5f));
     }
 
     private void OnAITextReceived(string text)
     {
-        // animator.CrossFade("AISpeak", 0.1f); // 你可以自定义AISpeak动画名
     }
 
     private string EmotionToStateName(string emotion)
@@ -87,9 +114,20 @@ public class CharacterController : MonoBehaviour
         return "default@unitychan";
     }
 
-    private IEnumerator ResetToDefaultAfterDelay(string stateName, float delay)
+    private string EmotionToActionName(string emotion)
+    {
+        if (string.IsNullOrEmpty(emotion)) return "WAIT00";
+        emotion = emotion.ToLower().Trim();
+        if (emotionToAction.TryGetValue(emotion, out var action))
+            return action;
+        return "WAIT00";
+    }
+
+    private IEnumerator ResetToDefaultAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
-        animator.CrossFade("default@unitychan", 0);
+        animator.CrossFade("WAIT00", 0.1f, 0);
+        animator.CrossFade("default@unitychan", 0.1f, 1);
+        animator.SetLayerWeight(1, 0f);
     }
 }
