@@ -14,7 +14,7 @@ public class Main : MonoBehaviour
     // Start is called before the first frame update
     async void Start()
     {
-        voiceAssistantClientSystem = new VoiceAssistantClientSystem();
+        voiceAssistantClientSystem = VoiceAssistantClientSystem.Instance;
         voiceAssistantClientSystem.Init();
         await voiceAssistantClientSystem.webSocket_IOT_Mqtt_Microphone_InIt(websocketUrl, otaUrl);
         Debug.Log($"Connecting: {websocketUrl} / {otaUrl}");

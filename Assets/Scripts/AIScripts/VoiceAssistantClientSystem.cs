@@ -24,10 +24,22 @@ namespace Vonweller
 {
     public class VoiceAssistantClientSystem
     {
+        private static VoiceAssistantClientSystem instance;
+        public static VoiceAssistantClientSystem Instance
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    instance = new VoiceAssistantClientSystem();
+                }
+                return instance;
+            }
+        }
 
         #region 字段属性
 
-        
+
         private const int MaxBufferSeconds = 20; // 最大缓冲时间
         public VoiceAssistantConfig config = new VoiceAssistantConfig();
         public AudioManager audioManager;
@@ -88,6 +100,12 @@ namespace Vonweller
             public OtaFirmware firmware;
         }
         #endregion
+
+        // 事件定义
+        public event Action<string> OnEmotionReceived;
+        public event Action<string> OnUserTextReceived;
+        public event Action<string> OnAITextReceived;
+
         public void Init()
         {
             // 可以从配置中读取VAD参数
@@ -305,17 +323,8 @@ namespace Vonweller
                     {
                         var t = $"[AI emotion]:\n【{emotion}】";
                         Debug.Log($"AI emotion: {emotion}");
-                        // TODO: 通过事件或其他方式通知UI更新
-                        // var getcmaer = GameObject.Find("AI_(Clone)")?.GetComponentInChildren<Getcmaer>();
-                        // if (getcmaer != null)
-                        // {
-                        //     getcmaer.settext(t);
-                        // }
-                        // var hotGameStart = GameObject.Find("HotGameStart(Clone)")?.GetComponent<HotGameStart>();
-                        // if (hotGameStart != null)
-                        // {
-                        //     hotGameStart.AnimationCtrLive2D(emotion);
-                        // }
+                        // 通知UI
+                        OnEmotionReceived?.Invoke(emotion);
                     }
                 }
                 else if (msgType == "stt")
@@ -325,13 +334,8 @@ namespace Vonweller
                     {
                         var t = "[用户]:\n" + text;
                         Debug.Log($"用户: {text}");
-                        // TODO: 通过事件或其他方式通知UI更新
-                        // var getcmaer = GameObject.Find("AI_(Clone)")?.GetComponentInChildren<Getcmaer>();
-                        // if (getcmaer != null)
-                        // {
-                        //     getcmaer.settext(t);
-                        //     getcmaer.Addplayerchat(text);
-                        // }
+                        // 通知UI
+                        OnUserTextReceived?.Invoke(text);
                     }
                 }
                 else if (msgType == "tts")
@@ -356,13 +360,8 @@ namespace Vonweller
                         {
                             var t = "[AI]:\n" + text;
                             Debug.Log($"AI: {text}");
-                            // TODO: 通过事件或其他方式通知UI更新
-                            // var getcmaer = GameObject.Find("AI_(Clone)")?.GetComponentInChildren<Getcmaer>();
-                            // if (getcmaer != null)
-                            // {
-                            //     getcmaer.settext(t);
-                            //     getcmaer.AddAIchat(text);
-                            // }
+                            // 通知UI
+                            OnAITextReceived?.Invoke(text);
                         }
                     }
                     else if (state == "stop")

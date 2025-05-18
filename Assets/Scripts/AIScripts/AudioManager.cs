@@ -73,7 +73,7 @@ public class AudioManager
     {
         if (audioSource == null)
         {
-            GameObject audioSourceObj = GameObject.Find("AudioSource");
+            GameObject audioSourceObj = GameObject.FindObjectOfType<AudioSource>().gameObject;
             if (audioSourceObj == null)
             {
                 Debug.LogWarning("未找到AudioSource对象，创建新对象");
